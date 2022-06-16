@@ -14,9 +14,9 @@ def start():
 
     try:
         email = emailInput.get()
-        main.username = accountInput.get()
-        main.email = email
         username = accountInput.get()
+        main.email = email
+        main.username = username
         main.username = username
         main.numberOfAccounts = int(numberAccountsInput.get())
         validityCheck1 = main.email.index('@')
