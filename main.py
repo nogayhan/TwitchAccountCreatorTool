@@ -1,5 +1,4 @@
 import selenium
-import info
 import pyautogui as pg
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -16,29 +15,38 @@ options = webdriver.ChromeOptions()
 options.add_experimental_option('excludeSwitches', ['enable-logging'])
 driver = webdriver.Chrome(options=options)
 username = ""
-suffix = ""
+extension = ""
+email = ""
+domain = ""
+numberOfAccounts = 0
 gcredentials = []
-
+splitEmail = []
+firstHalfEmail = ""
+secondHalfEmail = ""
 
 def generateLogin():
     global username
-    global suffix
+    global extension
+    global email
+    global domain
     global gcredentials
+    global splitEmail
+    global firstHalfEmail
+    global secondHalfEmail
 
     random.seed(time.time())
+    splitEmail = email.split('@')
+    firstHalfEmail = splitEmail[0]
+    secondHalfEmail = splitEmail[1]
     letters = string.ascii_letters
-    temp = random.randint(123456, 999999)
-    suffix = str(temp)
-    username = info.ACCOUNT_NAME + suffix
+    temp = random.randint(99999, 9999999)
+    extension = str(temp)
+    email = firstHalfEmail + "+" + extension + "@" + secondHalfEmail
+    username += extension
     temp = random.choices(letters, k=16)
     stringPassword = ""
     gcredentials = [username, stringPassword.join(temp)]
     return gcredentials
-
-
-def connectBattlenet():
-    driver.get("https://www.twitch.tv/settings/connections")
-    connectButton = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[1]/div/div[2]/div[1]/main/div[2]/div[3]/div/div/div/div/div[2]/div[1]/div/div[2]/div[1]/button"))).click()
 
 
 def registerAccount(credentials):
@@ -63,7 +71,7 @@ def registerAccount(credentials):
     WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[1]/div/div[1]/div[3]/div/div/div/div[3]/form/div/div[4]/div/div[2]/button/div/div[2]"))).click()
 
     # Email:
-    WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[1]/div/div[1]/div[3]/div/div/div/div[3]/form/div/div[4]/div/div[1]/div[2]/input"))).send_keys(info.EMAIL + "+" + str(suffix) + info.DOMAIN)
+    WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[1]/div/div[1]/div[3]/div/div/div/div[3]/form/div/div[4]/div/div[1]/div[2]/input"))).send_keys(email)
 
     time.sleep(2)
     WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[1]/div/div[1]/div[3]/div/div/div/div[3]/form/div/div[5]/button/div/div"))).click()
@@ -81,16 +89,5 @@ def registerAccount(credentials):
 
     print("Account created!\n\tUsername: " + gcredentials[0] + " Password: " + gcredentials[1])
     accounts = open("accounts.txt", 'a')
-    accounts.write("Email: " + info.EMAIL + "+" + suffix + info.DOMAIN + " | " + " Username: " + gcredentials[0] + " | Password: " + gcredentials[1] + "\n")
+    accounts.write("Email: " + email + " | " + " Username: " + gcredentials[0] + " | Password: " + gcredentials[1] + "\n")
     accounts.close()
-
-
-if __name__ == '__main__':
-    numAccounts = 0
-    try:
-        numAccounts = int(input("Number of accounts to create: "))
-        for x in range(numAccounts + 1):
-            registerAccount(generateLogin())
-    except ValueError:
-        print("Please enter an integer.")
-        quit()
